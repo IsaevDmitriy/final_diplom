@@ -17,7 +17,7 @@ class Shop(models.Model):
     """Магазин (поставщик)"""
 
     name = models.CharField(max_length=50, verbose_name='Название')
-    url = models.URLField(verbose_name='Ссылка', null=True, blank=True)    # Адрес с которого будут приходить yaml с информацией о заказах
+    url = models.URLField(verbose_name='Ссылка', null=True, blank=True)
     state = models.CharField(verbose_name='Приём заказов', choices=ShopStatusChoices.choices, max_length=20,
                             default=ShopStatusChoices.OPEN)
     user = models.OneToOneField('User', verbose_name='Пользователь',
@@ -123,7 +123,7 @@ class OrderStateChoices(models.TextChoices):
 
 
 class Order(models.Model):
-    """Дата создания, автор и статус заказа"""
+    """Заказ"""
     user = models.ForeignKey('User', verbose_name='Пользователь',
                              related_name='orders', blank=True,
                              on_delete=models.CASCADE)
@@ -144,7 +144,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    """Магазины и цены в заказе"""
+    """Позиции в заказе"""
     order = models.ForeignKey('Order', verbose_name='Заказ', related_name='order_items', blank=True,
                               on_delete=models.CASCADE)
     product_info = models.ForeignKey('ProductInfo', verbose_name='Информация о продукте', related_name='order_items',
@@ -157,7 +157,7 @@ class OrderItem(models.Model):
         verbose_name_plural = "Список элементов заказа"
 
     def __str__(self):
-        return f'{self.product_info} {self.quantity}'
+        return f'Заказ:{self.order} | Продукт:{self.product_info} | Количество:{self.quantity}'
 
 
 class UserTypeChoices(models.TextChoices):
@@ -169,9 +169,9 @@ class UserTypeChoices(models.TextChoices):
 
 
 class User(AbstractUser):
-    """
-    Пользователь
-    """
+    """Пользователь"""
+
+
     username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(
@@ -226,7 +226,7 @@ class User(AbstractUser):
 
 
 class Buyer(models.Model):
-    """Покупатель"""
+    """Контакты покупателя при доставке"""
     user = models.ForeignKey('User', verbose_name='Пользователь',
                              related_name='contacts', blank=True,
                              on_delete=models.CASCADE)
